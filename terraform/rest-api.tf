@@ -51,5 +51,5 @@ resource "aws_api_gateway_stage" "dev"{
   stage_name = "dev"
   deployment_id = aws_api_gateway_deployment.deploy-1.id
   rest_api_id = aws_api_gateway_rest_api.url_shortener_proxy.id
-  low_xr
+  xray_tracing_enabled = true
 }

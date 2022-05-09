@@ -42,50 +42,6 @@ func CreateLocalClient() (*dynamodb.Client, error) {
 
 var localClientConfig, _ = CreateLocalClient()
 
-//func TableExists(client *dynamodb.Client, name string) bool {
-//	tables, err := client.ListTables(context.TODO(), &dynamodb.ListTablesInput{})
-//	if err != nil {
-//		log.Fatal("error listing tables", err)
-//
-//	}
-//	for _, n := range tables.TableNames {
-//		if n == name {
-//			return true
-//		}
-//	}
-//	return false
-//}
-
-//
-//// CreateTable creates tables if it does not exist
-//func CreateTable(client *dynamodb.Client, tableName string) {
-//	if !TableExists(client, tableName) {
-//		var input = dynamodb.CreateTableInput{
-//			AttributeDefinitions: []types.AttributeDefinition{
-//				{
-//					AttributeName: aws.String("key"),
-//					AttributeType: types.ScalarAttributeTypeS,
-//				},
-//			},
-//			KeySchema: []types.KeySchemaElement{
-//				{
-//					AttributeName: aws.String("key"),
-//					KeyType:       types.KeyTypeHash,
-//				},
-//			},
-//
-//			BillingMode: types.BillingModePayPerRequest,
-//			TableName:   aws.String(tableName),
-//		}
-//		_, err := client.CreateTable(context.TODO(), &input)
-//		if err != nil {
-//			log.Fatal("Error creating table ", err)
-//		}
-//	} else {
-//		print("Table exists\n")
-//	}
-//}
-
 // Get given hash returns value
 func Get(tableName string, hash string) string {
 

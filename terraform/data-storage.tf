@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "url_s3_b" {
 }
 
 resource "aws_dynamodb_table" "urls" {
-  name = "S3URLS"
+  name = "S3AssignmentFileSource"
   billing_mode = "PAY_PER_REQUEST"
   attribute {
     name = "urlId"
