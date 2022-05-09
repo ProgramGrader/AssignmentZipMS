@@ -17,7 +17,7 @@ resource "aws_dynamodb_table" "urls" {
   }
 
   attribute {
-    name = "key"
+    name = "region"
     type = "S"
   }
 
