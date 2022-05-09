@@ -7,8 +7,24 @@ resource "aws_dynamodb_table" "urls" {
   name = "S3AssignmentFileSource"
   billing_mode = "PAY_PER_REQUEST"
   attribute {
-    name = "urlId"
+    name = "UUID"
     type = "S"
   }
-  hash_key = "urlId"
+
+  attribute {
+    name = "key"
+    type = "S"
+  }
+
+  attribute {
+    name = "key"
+    type = "S"
+  }
+
+  attribute {
+    name = "bucket"
+    type = "S"
+  }
+
+  hash_key = "UUID"
 }
