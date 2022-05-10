@@ -11,20 +11,5 @@ resource "aws_dynamodb_table" "urls" {
     type = "S"
   }
 
-  attribute {
-    name = "key"
-    type = "S"
-  }
-
-  attribute {
-    
-    name = "region"
-    type = "S"
-  }
-
-    name = "bucket"
-    type = "S"
-  }
-
   hash_key = "UUID"
 }

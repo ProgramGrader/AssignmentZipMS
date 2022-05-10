@@ -4,10 +4,12 @@
 resource "null_resource" "compile_binary" {
   triggers = {
     build_number = timestamp()
-
   }
+
   provisioner "local-exec" {
-    command = "GOOS=linux GOARCH=amd64 go build -ldflags '-w' -o  ../src/handler  ../src/handler.go"
+    command = "go build -ldflags '-w' -o handler handler.go"
+    interpreter = ["PowerShell"]
+    working_dir = "../src"
   }
 }
 
@@ -29,6 +31,7 @@ resource "aws_lambda_function" "redirect_lambda" {
   runtime       = "go1.x"
   timeout       = 5
   memory_size   = 128
+  depends_on = [data.archive_file.lambda_zip]
 }
 
 resource "aws_lambda_permission" "allow_api" {

@@ -1,11 +1,16 @@
 
 resource "aws_api_gateway_rest_api" "url_shortener_proxy" {
   name = "url_shortener_proxy"
+
   description = "proxy used to handle the requests to lambda function"
+
   endpoint_configuration {
     types = ["REGIONAL"]
   }
+
 }
+
+
 
 resource "aws_api_gateway_resource" "url" { // since we are accessing the hash from the url
   rest_api_id = aws_api_gateway_rest_api.url_shortener_proxy.id
