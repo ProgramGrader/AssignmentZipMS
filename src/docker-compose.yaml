@@ -16,7 +16,7 @@ services:
       - SKIP_SSL_CERT_DOWNLOAD=False # had to create the env var manually for local stacks to notice
       - DEFAULT_REGION=us-east-2 #had to create the env var manually for local stacks to notice
       - USE_SSL=False
-      - DYNAMODB_SHARE_DB=1
+      - DYNAMODB_SHARE_DB=1 # SOLVED the issue of dynamodb not being found using go sdk
       #- LOCALSTACK_HOSTNAME=localhost
     volumes:
       - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"

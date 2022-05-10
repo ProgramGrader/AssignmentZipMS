@@ -7,13 +7,13 @@ resource "null_resource" "compile_binary" {
 
   }
   provisioner "local-exec" {
-    command = "GOOS=linux GOARCH=amd64 go build -ldflags '-w' -o  ../../../src/URLShortener/lambda/handler  ../../../src/URLShortener/lambda/handler.go"
+    command = "GOOS=linux GOARCH=amd64 go build -ldflags '-w' -o  ../src/handler  ../src/handler.go"
   }
 }
 
 // zipping code
 data "archive_file" "lambda_zip"{
-  source_file = "../../../src/URLShortener/lambda/handler"
+  source_file = "../src/handler"
   type        = "zip"
   output_path = "handler.zip"
   depends_on = [null_resource.compile_binary]

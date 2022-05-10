@@ -30,7 +30,7 @@ func DownloadS3Object(config aws.Config, key string) {
 
 // Remember we're accessing the s3 bucket via the url in the dyanmodb not directly from s3
 
-func GetPresignedURL(config aws.Config, bucket string, key string) string {
+func CreatePresignedURL(config aws.Config, bucket string, key string) string {
 
 	client := s3.NewFromConfig(config)
 	input := &s3.GetObjectInput{
@@ -50,4 +50,8 @@ func GetPresignedURL(config aws.Config, bucket string, key string) string {
 	fmt.Println(response.URL)
 
 	return response.URL
+}
+
+func redirect(url string) {
+
 }

@@ -7,3 +7,4 @@ provider "aws" {
   region = "us-east-2" // looks like for some reason for awslocal to work you need to change the region to us-east-1
   profile = "dev"
 }
+// Current pain point : receiving bucket not found error when trying to connect to the restapi using links similar to this http://localhost:4566/restapis/sl539f7o55/dev
