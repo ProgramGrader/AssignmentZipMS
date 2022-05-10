@@ -17,6 +17,11 @@ resource "aws_dynamodb_table" "urls" {
   }
 
   attribute {
+    
+    name = "region"
+    type = "S"
+  }
+
     name = "bucket"
     type = "S"
   }
