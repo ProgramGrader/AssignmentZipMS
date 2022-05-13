@@ -38,6 +38,6 @@ resource "aws_lambda_permission" "allow_api" {
   action        = "lambda:InvokeFunction"
 }
 
-// AWS COMMANDS TO MAKE SURE FUNCTION EXISTS/WORKS:
+// AWS COMMANDS TO MAKE SURE FUNCTION EXISTS/WORKS: // TODO create tests instead of manual commands
 // awslocal lambda list-functions
 // awslocal lambda invoke --function-name redirect out.txt

@@ -1,4 +1,4 @@
-package lamba_test_test
+package lambda_test_test
 
 import (
 	"common"
@@ -10,7 +10,7 @@ import (
 	"os"
 	"testing"
 	"tests"
-	"tests/lamba_test"
+	"tests/lambda_test"
 )
 
 var dynamodbClient, _ = common.CreateDynamoDbLocalClient()
@@ -66,7 +66,11 @@ func TestCreatePresignedURL(t *testing.T) {
 	fmt.Println(region)
 	fmt.Println(filename)
 
-	psUrl := lamba_test.CreatePresignedURL(awsCfg, bucket, filename)
+	psUrl := lambda_test.CreatePresignedURL(awsCfg, bucket, filename)
 	print(psUrl)
+
+}
+
+func TestDownloadS3Object(t *testing.T) {
 
 }

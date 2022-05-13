@@ -1,4 +1,4 @@
-package lamba_test
+package lambda_test
 
 import (
 	"context"
@@ -6,6 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"io"
+	"log"
+	"net/http"
 	"os"
 	"time"
 )
@@ -23,10 +26,6 @@ type S3PresignGetObjectAPI interface {
 func GetPresignedURL(c context.Context, api S3PresignGetObjectAPI, input *s3.GetObjectInput) (*v4.PresignedHTTPRequest, error) {
 	return api.PresignGetObject(c, input, s3.WithPresignExpires(300*time.Second))
 }
-
-// given s3 url
-
-// Remember we're accessing the s3 bucket via the url in the DynamoDB not directly from s3
 
 func CreatePresignedURL(config aws.Config, bucket string, key string) string {
 
@@ -49,15 +48,25 @@ func CreatePresignedURL(config aws.Config, bucket string, key string) string {
 	return response.URL
 }
 
-func DownloadS3Object(config aws.Config, key string) {
-	//client := s3.NewFromConfig(config)
-	//downloader := manager.NewDownloader(client)
-	//
-	//numBytes, err := downloader.Download(context.TODO(), downloadFile, &s3.GetObjectInput{
-	//
-	//})
-}
+func DownloadS3Object(psUrl string, filename string) error {
 
-func CreateTempURL(file os.File) {
+	resp, err := http.Get(psUrl)
+	if err != nil {
+		log.Fatalf("Failed to download s3 object, %v", err)
+	}
 
+	defer resp.Body.Close()
+	cwd, _ := os.Getwd()
+
+	out, err := os.Create(cwd)
+	if err != nil {
+		fmt.Println("Failed to create file ")
+		return err
+	}
+
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+
+	return err
 }
