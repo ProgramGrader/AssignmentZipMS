@@ -4,16 +4,18 @@
 resource "null_resource" "compile_binary" {
   triggers = {
     build_number = timestamp()
-
   }
+
   provisioner "local-exec" {
-    command = "GOOS=linux GOARCH=amd64 go build -ldflags '-w' -o  ../../../src/URLShortener/lambda/handler  ../../../src/URLShortener/lambda/handler.go"
+    command = "go build -ldflags '-w' -o handler handler.go"
+    interpreter = ["PowerShell"]
+    working_dir = "../src"
   }
 }
 
 // zipping code
 data "archive_file" "lambda_zip"{
-  source_file = "../../../src/URLShortener/lambda/handler"
+  source_file = "../src/handler"
   type        = "zip"
   output_path = "handler.zip"
   depends_on = [null_resource.compile_binary]
@@ -29,6 +31,7 @@ resource "aws_lambda_function" "redirect_lambda" {
   runtime       = "go1.x"
   timeout       = 5
   memory_size   = 128
+  depends_on = [data.archive_file.lambda_zip]
 }
 
 resource "aws_lambda_permission" "allow_api" {

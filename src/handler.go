@@ -19,7 +19,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	fmt.Printf("event.QueryStringParameters %v\n", request.QueryStringParameters)
 	fmt.Printf("event %v\n", request)
 
-	hash := "super secret code" // placeholder
+	url := "www.google.com"
 
 	// this would be how we get the hash from url
 	//if request.HTTPMethod == "GET" {
@@ -29,21 +29,13 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 	//  getS3URL(){}
 	// 	createTempURL(){}
-	//  redirect(){} TODO look into terraform modules might be able to return url to api and dynamically redirect user to URL using terraform
-
-	body := fmt.Sprintf("{\"message\": \"Redirect coming soon\", \"hash\": \"%s\"}", hash)
 
 	// the rest of the error codes are to be handled in terraform, specifically through aws_api_integration_response
 	return events.APIGatewayProxyResponse{
-		Body: body,
-
 		//302: found, 301: moved permanently, 300: multiple location available.
-		StatusCode: 302, //
+		StatusCode: 301,
 		Headers: map[string]string{
-			"Content-Type":                 "application/json",
-			"Access-Control":               "Content-Type",
-			"Access-Control-Allow-Origin":  "*",
-			"Access-Control-Allow-Methods": "GET",
+			"Location": url,
 		},
 	}, nil
 }
