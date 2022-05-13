@@ -1,4 +1,4 @@
-package lamba_test
+package lambda_test
 
 import (
 	"context"
@@ -6,6 +6,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"time"
 )
 
 // S3PresignGetObjectAPI defines the interface for the PresignGetObject function.
@@ -19,20 +24,15 @@ type S3PresignGetObjectAPI interface {
 }
 
 func GetPresignedURL(c context.Context, api S3PresignGetObjectAPI, input *s3.GetObjectInput) (*v4.PresignedHTTPRequest, error) {
-	return api.PresignGetObject(c, input)
+	return api.PresignGetObject(c, input, s3.WithPresignExpires(300*time.Second))
 }
 
-// given s3 url
+func CreatePresignedURL(config aws.Config, bucket string, key string) string {
 
-func DownloadS3Object(config aws.Config, key string) {
+	client := s3.NewFromConfig(config, func(options *s3.Options) {
+		options.UsePathStyle = true
+	})
 
-}
-
-// Remember we're accessing the s3 bucket via the url in the dyanmodb not directly from s3
-
-func GetPresignedURL(config aws.Config, bucket string, key string) string {
-
-	client := s3.NewFromConfig(config)
 	input := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
@@ -45,9 +45,28 @@ func GetPresignedURL(config aws.Config, bucket string, key string) string {
 		fmt.Println("Error retrieving pre-signed object:")
 		panic(err)
 	}
-
-	fmt.Println("The URL: ")
-	fmt.Println(response.URL)
-
 	return response.URL
+}
+
+func DownloadS3Object(psUrl string, filename string) error {
+
+	resp, err := http.Get(psUrl)
+	if err != nil {
+		log.Fatalf("Failed to download s3 object, %v", err)
+	}
+
+	defer resp.Body.Close()
+	cwd, _ := os.Getwd()
+
+	out, err := os.Create(cwd)
+	if err != nil {
+		fmt.Println("Failed to create file ")
+		return err
+	}
+
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+
+	return err
 }

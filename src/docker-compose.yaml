@@ -1,3 +1,5 @@
+# TODO create a task for this
+
 version: '3.8'
 services:
   localstack:
@@ -14,10 +16,13 @@ services:
       - HOST_TMP_FOLDER=${TMPDIR:-/tmp/}localstack
       - DOCKER_HOST=unix:///var/run/docker.sock
       - SKIP_SSL_CERT_DOWNLOAD=False # had to create the env var manually for local stacks to notice
-      - DEFAULT_REGION=us-east-2 #had to create the env var manually for local stacks to notice
+      - S3_SKIP_SIGNATURE_VALIDATION=0
+      - DEFAULT_REGION=us-east-2 # had to create the env var manually for local stacks to notice
       - USE_SSL=False
-      - DYNAMODB_SHARE_DB=1
-      #- LOCALSTACK_HOSTNAME=localhost
+      - DYNAMODB_SHARE_DB=1 # SOLVED the issue of dynamodb not being found using go sdk
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+
     volumes:
       - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"

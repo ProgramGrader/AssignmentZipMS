@@ -1,11 +1,22 @@
 package main
 
 import (
+	_ "common"
 	"context"
-	"fmt"
+	_ "fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	_ "github.com/aws/aws-sdk-go-v2/aws"
+	_ "github.com/aws/aws-sdk-go-v2/config"
+	_ "github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	_ "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	_ "os"
+	_ "tests"
+	_ "tests/lambda_test"
 )
+
+// TODO - Fix Presign calcuation error when using presigned URL in local stacks
+// TODO - Test handler function using SAM
 
 // basic skeleton for the redirect
 
@@ -13,37 +24,45 @@ import (
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
+	//cfg, _ := config.LoadDefaultConfig(context.TODO())
+	//dynamodbClient := dynamodb.NewFromConfig(cfg)
+
 	// logging
-	fmt.Printf("event.HTTPMethod %v\n", request.HTTPMethod)
-	fmt.Printf("event.Body %v\n", request.Body)
-	fmt.Printf("event.QueryStringParameters %v\n", request.QueryStringParameters)
-	fmt.Printf("event %v\n", request)
+	//fmt.Printf("event.HTTPMethod %v\n", request.HTTPMethod)
+	//fmt.Printf("event.Body %v\n", request.Body)
+	//fmt.Printf("event.QueryStringParameters %v\n", request.QueryStringParameters)
+	//fmt.Printf("event %v\n", request)
 
-	hash := "super secret code" // placeholder
+	//UUID := request.QueryStringParameters["UUID"]
 
-	// this would be how we get the hash from url
+	//var bucket string
+	//var filename string
+
 	//if request.HTTPMethod == "GET" {
-	//	hash = request.QueryStringParameters["hash"]
+	//	bucket, _, filename = tests.Get(dynamodbClient, common.TableName, UUID)
+	//}
+	//psUrl := lambda_test.CreatePresignedURL(cfg, bucket, filename) // PreSigned URL
+	//err := lambda_test.DownloadS3Object(psUrl, filename)
+	//if err != nil {
+	//	fmt.Printf("Failed to download s3 object")
+	//	return events.APIGatewayProxyResponse{}, err
 	//}
 	//
+	//object, err := os.ReadFile(filename)
+	//if err != nil{
+	//	fmt.Printf("Failed to Read file, %v", err)
+	//}
+	//
+	//url = string(object)
 
-	//  getS3URL(){}
-	// 	createTempURL(){}
-	//  redirect(){} TODO look into terraform modules might be able to return url to api and dynamically redirect user to URL using terraform
-
-	body := fmt.Sprintf("{\"message\": \"Redirect coming soon\", \"hash\": \"%s\"}", hash)
-
-	// the rest of the error codes are to be handled in terraform, specifically through aws_api_integration_response
+	url := "https://iuscsg.org"
 	return events.APIGatewayProxyResponse{
-		Body: body,
+		//307: temporary redirect, 302: found, 301: moved permanently, 300: multiple location available.
+		//Body:       fmt.Sprintf("{\"message\":\"Error occurred unmarshaling request: %v.\"}", url),
 
-		//302: found, 301: moved permanently, 300: multiple location available.
-		StatusCode: 302, //
+		StatusCode: 307,
 		Headers: map[string]string{
-			"Content-Type":                 "application/json",
-			"Access-Control":               "Content-Type",
-			"Access-Control-Allow-Origin":  "*",
-			"Access-Control-Allow-Methods": "GET",
+			"Location": url,
 		},
 	}, nil
 }
