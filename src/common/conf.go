@@ -12,7 +12,7 @@ import (
 // common constants and Configurations used to access local dynamodb & aws resources
 
 const (
-	BucketName = "url-bucket"
+	BucketName = "assignment-url-bucket"
 	TableName  = "S3AssignmentFileSource"
 	AwsRegion  = "us-east-2"
 )

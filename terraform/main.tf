@@ -6,12 +6,11 @@
 // TODO - Fix terraform vulnerabilities
 // TODO - Test terraform using terragrunt
 
-provider "aws" {
+locals {
   region = "us-east-2"
-  profile = "dev"
+}
 
-  default_tags {
-    Environment = "dev"
-    Name = "Assignment-Zip-MS"
-  }
+provider "aws" {
+  profile = "default"
+  region = "us-east-2"
 }

@@ -1,0 +1,67 @@
+package aws_lambda
+
+import (
+	"context"
+	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"io"
+	"net/http"
+)
+
+// These are the Functions used in lambdaFunction
+
+// S3PresignGetObjectAPI defines the interface for the PresignGetObject function.
+// We use this interface to test the function using a mocked service.
+
+type S3PresignGetObjectAPI interface {
+	PresignGetObject(
+		ctx context.Context,
+		params *s3.GetObjectInput,
+		optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error)
+}
+
+func GetPresignedURL(c context.Context, api S3PresignGetObjectAPI, input *s3.GetObjectInput) (*v4.PresignedHTTPRequest, error) {
+	return api.PresignGetObject(c, input)
+}
+
+func CreatePresignedURL(config aws.Config, bucket string, key string) string {
+
+	client := s3.NewFromConfig(config)
+
+	input := &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}
+
+	psClient := s3.NewPresignClient(client)
+
+	response, err := GetPresignedURL(context.TODO(), psClient, input)
+	if err != nil {
+		fmt.Println("Error retrieving pre-signed object:")
+		panic(err)
+	}
+	return response.URL
+}
+
+func GetURLObject(psURL string, filename string) (string, error) {
+	req, _ := http.NewRequest("GET", psURL, nil)
+	req.Header.Add("host", req.Host)
+	resp, err := http.DefaultClient.Do(req.WithContext(context.TODO()))
+	if err != nil {
+		fmt.Println("Failed to get object using PresignedURL")
+		panic(err)
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
+
+	data, err := io.ReadAll(resp.Body)
+
+	return string(data), err
+
+}

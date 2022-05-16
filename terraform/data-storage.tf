@@ -1,35 +1,56 @@
 
 resource "aws_s3_bucket" "url_s3_b" {
-  bucket = "url-bucket"
+  bucket = "assignment-url-bucket"
 
   tags = {
     Name = "url bucket"
     Environment = "dev"
   }
+
+#  logging {
+#    target_bucket = "target-bucket"
+#  }
+
 }
 
-// Not sure if these are needed -
-data "aws_iam_policy_document" "role-policy" {
-  policy_id = "url-bucket-policy"
+#
+#resource "aws_s3_bucket_public_access_block" "block-public-access" {
+#  bucket = aws_s3_bucket.url_s3_b.bucket
+#  block_public_acls = true
+#  block_public_policy = true
+#  ignore_public_acls = true
+#  restrict_public_buckets = true
+#}
 
-  statement {
-    effect = "Allow"
-    actions = ["s3:GetObject"]
+#resource "aws_s3_bucket_cors_configuration" "allow_access" {
+#  bucket = aws_s3_bucket.url_s3_b.bucket
+#
+#  cors_rule {
+#    allowed_headers = ["*"]
+#    max_age_seconds = 3000
+#    allowed_methods = ["GET"]
+#    allowed_origins = ["*"]
+#  }
+#
+#}
 
-    resources = ["arn::aws:s3:::url-bucket"]
-  }
-}
+#
 
-resource "aws_iam_role" "role" {
-  assume_role_policy = data.aws_iam_policy_document.role-policy.json
-}
 
 // ^ Did not solve the pre signed calculation error //
 
-resource "aws_dynamodb_table" "urls" {
+
+#resource "aws_kms_key" "dynamo_db_kms" {
+#  enable_key_rotation = true
+#}
+
+resource "aws_dynamodb_table" "S3AssignmentFileSource" {
   name         = "S3AssignmentFileSource"
   billing_mode = "PAY_PER_REQUEST"
 
+#  point_in_time_recovery {
+#    enabled = true
+#  }
   attribute {
     name = "UUID"
     type = "S"
@@ -72,6 +93,11 @@ resource "aws_dynamodb_table" "urls" {
     name               = "filename"
     projection_type    = "INCLUDE"
     non_key_attributes = ["region", "bucket"]
-
   }
+
+#  server_side_encryption {
+#    enabled = true
+#    kms_key_arn = aws_kms_key.dynamo_db_kms.key_id
+#  }
 }
+

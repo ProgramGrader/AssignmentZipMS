@@ -14,6 +14,7 @@ resource "aws_api_gateway_resource" "url" { // since we are accessing the hash f
 
 }
 
+
 resource "aws_api_gateway_method" "get" {
   authorization = "NONE"
   api_key_required = false
@@ -27,17 +28,14 @@ resource "aws_api_gateway_method" "get" {
 // into the event handler for our lambda
 
 
-// we're not actually getting here anything here this, sends the request received by the proxy to the lambda function
 resource "aws_api_gateway_integration" "integration-get" {
   resource_id         = aws_api_gateway_resource.url.id
   rest_api_id         = aws_api_gateway_rest_api.url_shortener_proxy.id
-  integration_http_method  = aws_api_gateway_method.get.http_method // represents the HTTP method that will be done from the integration to the backend
+  integration_http_method  = "POST"// represents the HTTP method that will be done from the integration to the backend
   http_method         = "GET"
   type                = "AWS_PROXY" // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-integration-types.html
   uri                 = aws_lambda_function.redirect_lambda.invoke_arn // contains the endpoint to which we are proxying too. In our case its a lambda function
 }
-
-
 
 // proxy cannot match a empty path
 resource "aws_api_gateway_method" "url_root" {
@@ -54,7 +52,7 @@ resource "aws_api_gateway_integration" "lambda_root" {
   rest_api_id = aws_api_gateway_rest_api.url_shortener_proxy.id
 
   integration_http_method = "GET"
-  type        = "MOCK"
+  type        = "AWS_PROXY"
   uri = aws_lambda_function.redirect_lambda.invoke_arn
 }
 
@@ -74,4 +72,9 @@ resource "aws_api_gateway_stage" "dev"{
   deployment_id = aws_api_gateway_deployment.deploy-1.id
   rest_api_id = aws_api_gateway_rest_api.url_shortener_proxy.id
   xray_tracing_enabled = true
+
+#  access_log_settings {
+#    destination_arn = "arn:aws:logs:region:us-east-2:log-group:access_loggin"
+#    format          = "json"
+#  }
 }
