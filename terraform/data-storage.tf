@@ -2,6 +2,8 @@
 resource "aws_s3_bucket" "url_s3_b" {
   bucket = "assignment-url-bucket"
 
+  force_destroy = true
+
   tags = {
     Name = "url bucket"
     Environment = "dev"
@@ -56,44 +58,44 @@ resource "aws_dynamodb_table" "S3AssignmentFileSource" {
     type = "S"
   }
 
-  attribute {
-    name = "bucket"
-    type = "S"
-  }
-
-  attribute {
-    name = "region"
-    type = "S"
-  }
-
-  attribute {
-    name = "filename"
-    type = "S"
-  }
+#  attribute {
+#    name = "bucket"
+#    type = "S"
+#  }
+#
+#  attribute {
+#    name = "region"
+#    type = "S"
+#  }
+#
+#  attribute {
+#    name = "filename"
+#    type = "S"
+#  }
 
   hash_key = "UUID"
 
-  global_secondary_index {
-    hash_key           = "region"
-    name               = "region"
-    projection_type    = "INCLUDE"
-    non_key_attributes = [ "bucket", "filename"]
-  }
-
-  global_secondary_index {
-    hash_key           = "bucket"
-    name               = "bucket"
-    projection_type    = "INCLUDE"
-    non_key_attributes = ["region", "filename"]
-
-  }
-
-  global_secondary_index {
-    hash_key           = "filename"
-    name               = "filename"
-    projection_type    = "INCLUDE"
-    non_key_attributes = ["region", "bucket"]
-  }
+#  global_secondary_index {
+#    hash_key           = "region"
+#    name               = "region"
+#    projection_type    = "INCLUDE"
+#    non_key_attributes = [ "bucket", "filename"]
+#  }
+#
+#  global_secondary_index {
+#    hash_key           = "bucket"
+#    name               = "bucket"
+#    projection_type    = "INCLUDE"
+#    non_key_attributes = ["region", "filename"]
+#
+#  }
+#
+#  global_secondary_index {
+#    hash_key           = "filename"
+#    name               = "filename"
+#    projection_type    = "INCLUDE"
+#    non_key_attributes = ["region", "bucket"]
+#  }
 
 #  server_side_encryption {
 #    enabled = true

@@ -6,19 +6,26 @@ import (
 	"context"
 	"dynamoDAO"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"log"
 	"os"
 	"testing"
 )
 
+// we don't want to have to change this struct everytime we run a test
+// implement both versions
+
+type testCfg struct {
+}
+
 var cfg, _ = config.LoadDefaultConfig(context.TODO())
 var ddbClient = dynamodb.NewFromConfig(cfg)
 var awsClient = s3.NewFromConfig(cfg)
+
+// For LocalStacks
+var testEnvDbClient, _ = common.CreateDynamoDbLocalClient()
+var testEnvAwsClient = common.CreateAwsConfig()
 
 func setup() {
 
@@ -42,20 +49,20 @@ func setup() {
 	}(file)
 	bucket := common.BucketName
 
-	uploader := manager.NewUploader(awsClient)
-	_, err = uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(file.Name()),
-		Body:   file,
-	})
-	if err != nil {
-		log.Fatalln("Failed to upload file")
-	}
 	//fileInfo, _ := file.Stat()
 	//var size = fileInfo.Size()
 	//buffer := make([]byte, size)
 	//file.Read(buffer)
 	//
+	//
+	//_, err = s3.PutObject(context.TODO(), &s3.PutObjectInput{
+	//	Bucket: aws.String(bucket),
+	//	Key:    aws.String(file.Name()),
+	//	Body:   file,
+	//})
+	//if err != nil {
+	//	log.Fatalln("Failed to upload file")
+	//}
 
 	//
 	//out, err := awsClient.PutObject(context.TODO(), &objInput)
@@ -91,7 +98,7 @@ func TestCreatePresignedURL(t *testing.T) {
 
 	object, err := aws_lambda.GetURLObject(psUrl, "url.txt")
 	if err != nil {
-		t.Errorf("Failed to get url from aws")
+		t.Errorf("Failed to get url from S3 Object")
 	}
 
 	if object != "https://iuscsg.org" {

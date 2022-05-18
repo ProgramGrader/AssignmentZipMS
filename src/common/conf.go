@@ -9,13 +9,16 @@ import (
 	"log"
 )
 
-// common constants and Configurations used to access local dynamodb & aws resources
+// common constants and Configurations used to test local and deployed dynamodb & aws resources
 
 const (
 	BucketName = "assignment-url-bucket"
 	TableName  = "S3AssignmentFileSource"
 	AwsRegion  = "us-east-2"
 )
+
+type DynamoDbClient struct {
+}
 
 func CreateAwsConfig() aws.Config {
 	awsEndpoint := "http://localhost:4566"

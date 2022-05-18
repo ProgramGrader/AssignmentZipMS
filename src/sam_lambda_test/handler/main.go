@@ -27,6 +27,9 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	fmt.Printf("event %v\n", request)
 
 	UUID := request.QueryStringParameters["UUID"]
+	if UUID == "" {
+		// return status code
+	}
 
 	var bucket string
 	var filename string

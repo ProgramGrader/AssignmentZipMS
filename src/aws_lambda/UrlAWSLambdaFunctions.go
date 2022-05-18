@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-// These are the Functions used in lambdaFunction
+// These are the Functions used in handler
 
 // S3PresignGetObjectAPI defines the interface for the PresignGetObject function.
 // We use this interface to test the function using a mocked service.
