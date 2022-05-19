@@ -1,21 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.1.0"
-    }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "~> 2.2.0"
-    }
-  }
-
-  required_version = "~> 1.0"
-}
 
 resource "aws_apigatewayv2_api" "url-shortener-proxy" {
   name          = "url-shortener-proxy"
@@ -26,10 +8,11 @@ resource "aws_cloudwatch_log_group" "api-gw" {
   retention_in_days = 30
 }
 
-resource "aws_apigatewayv2_stage" "dev_stage" {
+resource "aws_apigatewayv2_stage" "api-gw_stage" {
   api_id = aws_apigatewayv2_api.url-shortener-proxy.id
-  name   = "dev_stage"
+  name   = var.environment
   auto_deploy = true
+  //PascalCase
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api-gw.arn

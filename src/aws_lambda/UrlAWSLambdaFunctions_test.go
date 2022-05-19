@@ -13,8 +13,7 @@ import (
 	"testing"
 )
 
-// we don't want to have to change this struct everytime we run a test
-// implement both versions
+// TODO implement both versions test conf and deployed conf, for flexible testing
 
 type testCfg struct {
 }
@@ -26,6 +25,10 @@ var awsClient = s3.NewFromConfig(cfg)
 // For LocalStacks
 var testEnvDbClient, _ = common.CreateDynamoDbLocalClient()
 var testEnvAwsClient = common.CreateAwsConfig()
+
+// -- currently this test adds url.txt info to dynamodb but not the s3 object
+// -- Put object in s3 object needs to be implemented
+// -- temporary: add url.txt to s3 manually test after/before running this test
 
 func setup() {
 

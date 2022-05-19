@@ -6,10 +6,6 @@
 // TODO - Fix terraform vulnerabilities
 // TODO - Test terraform using terragrunt
 
-locals {
-  region = "us-east-2"
-}
-
 provider "aws" {
   profile = "default"
   region = "us-east-2"

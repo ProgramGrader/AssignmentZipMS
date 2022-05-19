@@ -86,7 +86,7 @@ resource "aws_iam_policy" "dynamodb-policy" {
 		"Sid": "ReadWriteTable",
 		"Effect": "Allow",
 		"Action": ["dynamodb:GetItem"],
-		"Resource": "arn:aws:dynamodb:${local.region}:${aws_dynamodb_table.S3AssignmentFileSource.arn}:table/${aws_dynamodb_table.S3AssignmentFileSource.name}"
+		"Resource": "arn:aws:dynamodb:${var.aws_region}:${aws_dynamodb_table.S3AssignmentFileSource.arn}:table/${aws_dynamodb_table.S3AssignmentFileSource.name}"
 	}]
 })
 }

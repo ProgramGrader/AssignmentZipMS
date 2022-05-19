@@ -5,3 +5,7 @@ variable "aws_account_id" {
 variable "aws_region" {
   default = "us-east2"
 }
+
+variable "environment" {
+  default = "dev"
+}
