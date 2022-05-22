@@ -1,6 +1,7 @@
 
-resource "aws_apigatewayv2_api" "url-shortener-proxy" {
-  name          = "assignment-file-MS-proxy"
+
+resource "aws_apigatewayv2_api" "serverless_lambda_gw" {
+  name          = "serverless_lambda_gw"
   protocol_type = "HTTP"
 }
 
@@ -9,7 +10,7 @@ resource "aws_cloudwatch_log_group" "api-gw" {
 }
 
 resource "aws_apigatewayv2_stage" "api-gw_stage" {
-  api_id = aws_apigatewayv2_api.url-shortener-proxy.id
+  api_id = aws_apigatewayv2_api.serverless_lambda_gw.id
   name   = var.environment
   auto_deploy = true
   //PascalCase
@@ -34,35 +35,35 @@ resource "aws_apigatewayv2_stage" "api-gw_stage" {
 }
 
 resource "aws_apigatewayv2_integration" "redirect_lambda" {
-  api_id           = aws_apigatewayv2_api.url-shortener-proxy.id
-  integration_type = "AWS_PROXY"
-  integration_uri = aws_lambda_function.redirect_lambda.invoke_arn
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "redirect_lambda" {
-  api_id    = aws_apigatewayv2_api.url-shortener-proxy.id
-  route_key = "GET /" // matching any get request matching the / path
-  target = "integrations/${aws_apigatewayv2_integration.redirect_lambda.id}"
-}
-
-resource "aws_lambda_permission" "api_gw" {
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.redirect_lambda.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${aws_apigatewayv2_api.url-shortener-proxy.execution_arn}/*/*"
-}
-# -----
-resource "aws_apigatewayv2_integration" "document_lambda" {
-  api_id           = aws_apigatewayv2_api.url-shortener-proxy.id
+  api_id           = aws_apigatewayv2_api.serverless_lambda_gw.id
   integration_type = "AWS_PROXY"
   integration_uri = aws_lambda_function.document_lambda.invoke_arn
   integration_method = "POST"
 }
 
 resource "aws_apigatewayv2_route" "redirect_lambda" {
-  api_id    = aws_apigatewayv2_api.url-shortener-proxy.id
+  api_id    = aws_apigatewayv2_api.serverless_lambda_gw.id
+  route_key = "GET /" // matching any get request matching the / path
+  target = "integrations/${aws_apigatewayv2_integration.redirect_lambda.id}"
+}
+
+resource "aws_lambda_permission" "api_gw" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.document_lambda
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.serverless_lambda_gw.execution_arn}/*/*"
+}
+# -----
+resource "aws_apigatewayv2_integration" "document_lambda" {
+  api_id           = aws_apigatewayv2_api.serverless_lambda_gw.id
+  integration_type = "AWS_PROXY"
+  integration_uri = aws_lambda_function.document_lambda.invoke_arn
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "redirect_lambda" {
+  api_id    = aws_apigatewayv2_api.serverless_lambda_gw.id
   route_key = "GET /install_doc/" // matching any get request matching the / path
   target = "integrations/${aws_apigatewayv2_integration.document_lambda.id}"
 }
@@ -72,7 +73,7 @@ resource "aws_lambda_permission" "api_gw" {
   function_name = aws_lambda_function.document_lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${aws_apigatewayv2_api.url-shortener-proxy.execution_arn}/*/*"
+  source_arn = "${aws_apigatewayv2_api.serverless_lambda_gw.execution_arn}/*/*"
 }
 
 

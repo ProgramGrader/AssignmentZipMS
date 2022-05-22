@@ -1,12 +1,16 @@
 
-data "aws_route53_zone" "csgrader" {
-  zone_id      = "Z01322341QHBI9TU4903A"
+data "aws_route53_zone" "hosted_zone_csgrader" {
+  zone_id      = "Z08970362DRHAX92WRZTN"
   private_zone = false
 }
 
 resource "aws_acm_certificate" "dns_csgrader_acm" {
-  domain_name       = data.aws_route53_zone.csgrader.name
+  domain_name       = data.aws_route53_zone.hosted_zone_csgrader.name
+#  subject_alternative_names = ["assignmentfile.csgrader.org"]
   validation_method = "DNS"
+  tags = {
+    Name = "csgrader"
+  }
 }
 
 resource "aws_route53_record" "dns_csgrader_record" {
@@ -23,7 +27,20 @@ resource "aws_route53_record" "dns_csgrader_record" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.csgrader.zone_id
+  zone_id         = data.aws_route53_zone.hosted_zone_csgrader.zone_id
+}
+
+resource "aws_route53_zone" "subzone_assignmentfile" {
+  name = "assignmentfile.csgrader.org"
+  force_destroy = false
+}
+#
+resource "aws_route53_record" "subzone_assignmentfile_ns_record" {
+  name = "assignmentfile.csgrader.org"
+  zone_id = data.aws_route53_zone.hosted_zone_csgrader.zone_id
+  type = "NS"
+  records = [aws_apigatewayv2_stage.api-gw_stage.invoke_url]
+  ttl = "30"
 }
 
 resource "aws_acm_certificate_validation" "dns_csgrader_validation" {
@@ -33,7 +50,7 @@ resource "aws_acm_certificate_validation" "dns_csgrader_validation" {
 
 resource "aws_apigatewayv2_domain_name" "csgrader" {
   depends_on  = [aws_apigatewayv2_stage.api-gw_stage]
-  domain_name = "assignmentFile.${data.aws_route53_zone.csgrader.name}"
+  domain_name = data.aws_route53_zone.hosted_zone_csgrader.name
   domain_name_configuration {
     certificate_arn = aws_acm_certificate.dns_csgrader_acm.arn
     endpoint_type   = "REGIONAL"
@@ -42,7 +59,7 @@ resource "aws_apigatewayv2_domain_name" "csgrader" {
 }
 
 resource "aws_route53_record" "microserviceUrl" {
-  zone_id = data.aws_route53_zone.csgrader.zone_id
+  zone_id = data.aws_route53_zone.hosted_zone_csgrader.zone_id
   name    = aws_apigatewayv2_domain_name.csgrader.domain_name
   type    = "A"
   alias {
@@ -53,7 +70,7 @@ resource "aws_route53_record" "microserviceUrl" {
 }
 
 resource "aws_apigatewayv2_api_mapping" "mapping-invoke-url" {
-  api_id = aws_apigatewayv2_api.url-shortener-proxy.id
+  api_id = aws_apigatewayv2_api.serverless_lambda_gw.id
   domain_name = aws_apigatewayv2_domain_name.csgrader.id
   stage = aws_apigatewayv2_stage.api-gw_stage.id
 }
