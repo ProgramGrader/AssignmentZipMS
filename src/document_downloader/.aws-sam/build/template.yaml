@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'sam_lambda_test
+
+  Sample SAM Template for sam_lambda_test
+
+  '
+Globals:
+  Function:
+    Timeout: 5
+    Tracing: Active
+Resources:
+  HandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: HandlerFunction
+      Handler: handler
+      Runtime: go1.x
+      Architectures:
+      - x86_64
+      Tracing: Active
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /handler
+            Method: GET
+      Environment:
+        Variables:
+          PARAM1: VALUE
+    Metadata:
+      SamResourceId: HandlerFunction
+Outputs:
+  HandlerAPI:
+    Description: API Gateway endpoint URL for Prod environment for First Function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/handler/
+  HelloWorldFunction:
+    Description: First Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - HandlerFunction
+      - Arn
+  HelloWorldFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value:
+      Fn::GetAtt:
+      - HandlerFunctionRole
+      - Arn

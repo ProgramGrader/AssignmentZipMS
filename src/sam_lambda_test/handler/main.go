@@ -1,15 +1,15 @@
 package main
 
 import (
-	"aws_lambda"
-	"common"
 	"context"
-	"dynamoDAO"
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"test/m/v2/aws_lambda"
+	"test/m/v2/common"
+	"test/m/v2/dynamoDAO"
 )
 
 // TODO - Test handler function using SAM

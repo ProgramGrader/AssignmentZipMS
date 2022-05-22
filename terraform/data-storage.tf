@@ -1,4 +1,5 @@
 
+
 resource "aws_s3_bucket" "url_s3_b" {
   bucket = "assignment-url-bucket"
 

@@ -33,7 +33,7 @@ resource "aws_acm_certificate_validation" "dns_csgrader_validation" {
 
 resource "aws_apigatewayv2_domain_name" "csgrader" {
   depends_on  = [aws_apigatewayv2_stage.api-gw_stage]
-  domain_name = data.aws_route53_zone.csgrader.name
+  domain_name = "assignmentFile.${data.aws_route53_zone.csgrader.name}"
   domain_name_configuration {
     certificate_arn = aws_acm_certificate.dns_csgrader_acm.arn
     endpoint_type   = "REGIONAL"
